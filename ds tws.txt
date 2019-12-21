@@ -1,0 +1,733 @@
+#include<stdio.h>
+#include<string.h>
+
+	void main()
+	{
+		FILE *fp1,*fp2,*fp3;
+		char s1[100],s2[100];
+		int ch1=0,ch2=0;
+
+		fp1=fopen("/home/cse4/Desktop/text1.txt","r");
+		fp2=fopen("/home/cse4/Desktop/text2.txt","r");
+		fp3=fopen("/home/cse4/Desktop/text3.txt","w");
+		
+		if(fp1==NULL || fp2==NULL)
+		{
+			printf("File doesnt Exists\n");
+			exit(0);
+		}
+		ch1=(fscanf(fp1,"%s",s1));
+		ch2=(fscanf(fp2,"%s",s2));
+		
+		while(ch1==1)
+		{
+			while(ch1==1 && ch2==1)
+			{
+				if(strcmp(s1,s2)==0)
+				{
+					printf("%s\n",s1);
+					fprintf(fp3,"%s\n",s2);
+				}
+				ch2=fscanf(fp2,"%s",s2);
+			}
+			ch1=(fscanf(fp1,"%s",s1));
+
+			if(ch1==1)
+			{
+				rewind(fp2);
+				ch2=(fscanf(fp2,"%s",s2));
+			}
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include<stdio.h>
+#include<string.h>
+
+int F(char sym)
+{
+	switch(sym)
+	{
+		case '+':
+		case '-': return 2;
+		case '*':
+		case '/': return 4;
+		case '(': return 0;
+		case '#': return -1;
+		default : return 8;
+	}
+}
+
+int G(char sym)
+{
+	switch(sym)
+	{
+		case '+':
+		case '-': return 1;
+		case '*':
+		case '/': return 3;
+		case '(': return 9;
+		case ')': return 0;
+		default : return 7;
+	}
+}
+
+void InfixtoPostfix (char infix[], char postfix[])
+{
+	char sym;
+	int i,j=0,top=-1;
+	char stk[50];
+	stk[++top]='#';
+	for( i=0; i<strlen(infix); i++)
+	{
+		sym=infix[i];
+		while( F(stk[top])>G(sym) )
+		{
+			postfix[j]=stk[top--];
+			j++;
+		}
+		if( F(stk[top])!=G(sym) )
+			stk[++top]=sym;
+		else
+			top--;
+	}
+	while( stk[top]!='#' )
+	{
+		if(stk[top]!='(')
+			postfix[j++]=stk[top--];
+	}
+	postfix[j]='\0';
+}
+
+void main()
+{
+	char infix[50],postfix[50];
+	printf("Enter the infix expression: ");
+	scanf("%s",&infix);
+	InfixtoPostfix( infix, postfix);
+	printf("The postfix expression is : %s",postfix);
+}
+		
+	
+
+
+
+
+
+
+
+
+#include<stdio.h>
+#include<string.h>
+#define SIZE 20
+double stack[20];
+int top=-1;
+void push(double item)
+{
+	stack[++top]=item;
+}
+double pop()
+{
+	return stack[top--];
+}
+double evaluatepostfix(char expression[])
+{
+	double op1,op2;
+	int i=0;
+	char symbol;
+	do
+	{
+		symbol=expression[i];
+		if(symbol>='0'&&symbol<='9')
+			push(symbol-'0');
+		else
+		{
+			op2=pop();
+			op1=pop();
+			switch(symbol)
+			{
+				case'+': push(op1+op2);
+				break;
+				case'-': push(op1-op2);
+				break;
+				case'/':push(op1/op2);
+				break;
+			}
+		}
+	}while(expression[++i]!='\0');
+	return(pop());
+}
+void main()
+{
+	char expression[SIZE];
+	printf("Enter the postfix expression\n");
+	scanf("%s",expression);
+	printf("Result = %1f\n",evaluatepostfix(expression));
+}	
+
+
+
+
+
+#include<stdio.h>
+#include<string.h>
+#define size 3
+int rear=-1,front=0;
+
+struct queue
+{
+	int id;
+	char msg[50];
+}q[size];
+
+void insert()
+{
+	int msgid;
+	char txt[50];
+	if(rear==size-1)
+	{
+		printf("The queue is full");
+		return;
+	}
+
+	printf("Enter the message ID:");
+	scanf("%d",&msgid);
+	getchar();
+	printf("Enter the message:");
+	gets(txt);
+	++rear;
+	q[rear].id=msgid;
+	strcpy(q[rear].msg,txt);
+	
+}
+
+void del()
+{
+	if(front>rear)
+	{
+	printf("queue is empty");
+	front=0;
+	rear=size-1;
+	return;
+	}
+	
+	printf("%d was successfully deleted",q[front++].id);
+	
+}
+
+void display()
+{
+	int i;
+	if(front>rear)
+	{
+		printf("The queue is empty");
+		return;
+	}
+	else
+	{
+		for(i=0;i<rear;i++)
+		{
+		printf("Message id: %d\nMessage: %s",q[i].id,q[i].msg);
+		}
+	}
+}
+
+int main()
+{
+	int ch;
+	printf("\n1.Insert\n2.Delete\n3.Display\n4.Exit");
+	while(1)
+	{
+	printf("\nChoice:");
+	scanf("%d",&ch);
+		switch(ch)
+		{
+			case 1: insert();
+				break;
+			case 2: del();
+				break;
+			case 3: display();
+				break;
+			case 4: exit(0);
+			default:printf("Invalid choice");
+		}
+	}
+}
+	
+
+
+
+
+
+#include<stdio.h>
+#include<stdlib.h>
+#define Hsize 3
+int n;
+
+void initialize_hash(int a[])
+{
+	int i;
+	for(i=0; i<Hsize; i++)
+		a[i]=0;
+}
+
+int H(int k)
+{
+	return k%Hsize;
+}
+
+void insert(int item, int a[])
+{
+	int i,index,h_value;
+        h_value=H(item);
+	for(i=0; i<Hsize; i++)
+	{
+		index=(h_value+i)% Hsize;
+		if(a[index]==0)break;
+	}
+	if(a[index]==0)
+		a[index]=item;
+	else
+		printf("Hash table is full\n");
+}
+
+void display(int a[])
+{
+	int i;
+	for(i=0; i<Hsize; i++)
+		printf("a[%d]=%d\n",i,a[i]);
+}
+
+
+int main(int argc, char *argv[])
+{
+	int a[10],item,choice,flag;
+	initialize_hash(a);
+	for(; ;)
+	{
+		printf("1: Insert\n2: Display\n3: Exit\nEnter your Choice:");
+		scanf("%d",&choice);
+		switch(choice)
+		{
+			case 1:
+				printf("Enter the item :");
+				scanf("%d",&item);
+				insert(item,a);
+				break;
+				
+			case 2:
+				printf("Contents of hash table are:\n");
+				display(a);
+				break;
+				
+			case 3:
+				exit(0);
+				
+			default:
+				printf("Invalid choice");
+				
+		}
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*Ascending order in linked list*/
+#include<stdio.h>
+
+
+
+struct node
+{
+	int data;
+	struct node*next;
+};
+	void display(struct node *head)
+	{
+		struct node *temp;
+		temp=head;
+		while(temp!=NULL)
+		{
+			printf("%d",temp->data);
+			temp=temp->next;
+		}
+	}
+	struct node*Add(struct node *head,int value)
+	{
+		struct node*newnode,*previous,*current;
+
+		newnode=(struct node*)malloc(sizeof(struct node));
+		newnode->data=value;
+		newnode->next=NULL;
+
+	if(newnode==NULL)
+	{
+		printf("Error:Couldnot allocate memory:");
+	}
+	else
+	{
+		if(head==NULL)
+		head=newnode;
+	else
+	{
+		if(newnode->data < head->data)
+		{
+			newnode->next=head;
+			head=newnode;
+		}
+		else
+			current=head->next;
+			previous=head;
+
+		while(current!=NULL && newnode->data > current->data)
+		{
+			previous=previous->next;
+			current=current->next;
+		}
+		previous->next=newnode;
+		newnode->next=current;
+		}
+	}
+	return head;
+	}
+	void main()
+	{
+		int choice,value;
+		struct node *head=NULL;
+
+	for(;;)
+	{
+		printf("\n Enter 1.add 2.display 3.exit");
+		printf("\n enter choice:");
+		scanf("%d",&choice);
+		switch(choice)
+		{
+			case 1 : printf("Enter value:");
+				 scanf("%d",&value);
+				head=Add(head,value);
+				break;
+
+			case 2 :
+				if(head==NULL)
+				{
+					printf("list is empty");
+				}
+				display(head);
+				break;
+
+			case 3 :
+				exit(1);
+				break;
+		}
+	}
+}
+
+
+
+
+
+
+
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node
+{
+	int data;
+	struct node *left,*right;
+};
+
+struct node *newnode(int item)
+{
+	int count;
+	struct node *temp=(struct node *)malloc(sizeof(struct node));
+	count++;
+	temp->data=item;
+	temp->left=temp->right=NULL;
+	return temp;
+}
+
+void inorder(struct node *root)
+{
+	if(root!= NULL)
+	{
+		inorder(root->left);
+		printf("%d\t",root->data);
+		inorder(root->right);
+	}
+}
+
+struct node *insert(struct node *node, int data)
+{
+	if(node==NULL)
+		return newnode(data);
+	if(data<node->data)
+		node->left=insert(node->left, data);
+	else if(data>node->data)
+		node->right=insert(node->right, data);
+return node;
+}
+
+void search(struct node *node, int key)
+{
+	if(node==NULL)
+		printf("element not found\n");
+	else if(node->data==key)
+		printf("Element found\n");
+	else if(key>node->data)
+		search(node->right,key);
+	else if(key<node->data)
+		search(node->left,key);
+}
+	
+void tnodes(struct node *node)
+{
+	struct node *first;
+	int count;
+	if(first==NULL)
+	{
+		count=0;
+	}	
+	else
+	{
+		printf("The total number of nodes are:%d",count);
+	}
+}
+int counttwo(struct node *node)
+{
+	if(node==NULL)
+	return 0;
+	if(node->left!=NULL && node->right!=NULL)
+	return 1;
+	else
+	return counttwo(node->left)+counttwo(node->right);
+}
+int nonleafnodes(struct node *node)
+{
+	if((node==NULL)||(node->left==NULL&& node->right==NULL))
+	return 0;
+	return(1+nonleafnodes(node->left)+nonleafnodes(node->right));
+}
+
+
+int main()
+{
+	struct node *root=NULL;
+	int ch,item,key;
+	printf("Enter the value of the root node=");
+	scanf("%d",&item);
+	root=insert(root,item);
+	printf("Would you like to insert another node\n1:yes\n2:no\n");
+	scanf("%d",&ch);
+	while(ch==1)
+	{
+		printf("Enter the data value:");
+		scanf("%d",&item);
+		insert(root,item);
+		printf("Would you like to insert another node\n1:yes\n2:no\n");
+		scanf("%d",&ch);
+	}
+
+	inorder(root);
+	ch=1;
+	while(ch==1)
+	{
+	printf("\nEnter the element to be searched:");
+	scanf("%d",&key);
+	search(root, key);
+	printf("Would you like to seacrh another element\n1:yes\n2:no\n");
+	scanf("%d",&ch);
+	}
+}
+
+
+
+
+
+
+
+#include<stdio.h>
+struct node
+{
+	int data;
+	struct node *left;
+	struct node *right;
+};
+struct node *first=NULL;
+
+void insertfront()
+{
+	struct node *temp;
+	temp=(struct node *)malloc(sizeof(struct node));
+	printf("Enter a element:");
+	scanf("%d",&temp->data);
+	temp->left=NULL;
+	temp->right=NULL;
+	if(first==NULL)
+		first=temp;
+	else
+	{
+		temp->right=first;
+		first->left=temp;
+		first=temp;
+	}
+}
+
+void insertrear()
+{
+	struct node *temp,*p;
+	temp=(struct node *)malloc(sizeof(struct node));
+	printf("Enter the element:");
+	scanf("%d",&temp->data);
+	temp->left=NULL;
+	temp->right=NULL;
+	if(first==NULL)
+	{
+		first=temp;
+	}
+	else
+	{
+		p=first;
+		while(p->right != NULL)
+		{
+			p->right=temp;
+		}
+		p->right=temp;
+		temp->left=p;
+	}
+}
+
+void display()
+{
+	struct node *temp;
+	temp=first;
+	if(temp==NULL)
+	{
+		printf("The ist is empty");
+	}
+	else
+	{
+		while(temp!=NULL)
+		{
+			printf(" %d",temp->data);
+			temp=temp->right;
+		}
+	}
+}
+
+void leftsearch()
+{
+	struct node *temp;
+	temp=first;
+	int key,pos=0;
+	printf("Emter the ement to be searched:");
+	scanf("%d",&key);
+	
+	if(temp==NULL)
+		printf("List is empty");
+	else
+	{
+		while(temp !=NULL)
+		{
+			pos++;
+			if(temp->data == key)
+			{
+				printf("The element found at position %d", pos);
+				exit(0);
+			}
+			temp=temp->right;
+		}
+		printf("Element not found");
+	}
+}
+
+void rightsearch()
+{
+	struct node *temp;
+	temp=first;
+	int key,pos=0;
+	printf("Emter the ement to be searched:");
+	scanf("%d",&key);
+	if(temp==NULL)
+		printf("List is empty");
+	else
+	{
+		while(temp!=NULL)
+		{
+			temp=temp->right;
+		}
+		while(temp != NULL)
+		{
+			pos++;
+			if(temp->data == key)
+			{
+				printf("Element fount at position %d", pos);
+				exit(0);
+			}
+			temp=temp->left;
+		}
+	printf("Element  not found");
+	}
+}
+
+
+
+
+void main()
+{
+	int ch,x;
+	struct node *head=NULL;
+	while(1)
+	{
+	printf("\n1.Insert at front\n2.Insert at rear end\n3.Display\n4.Leftsearch\n5.Rightsearch\n6.Exit\n");
+	printf("Enter the choice:");
+	scanf("%d",&ch);
+	
+		switch(ch)
+		{
+			case 1:
+				insertfront();
+				break;
+			case 2:
+				insertrear();
+				break;
+			case 3:
+				display();
+				break;
+			case 4:
+				leftsearch();
+				break;
+			case 5:
+				rightsearch();
+				break;
+			case 6:
+				exit(0);
+			default:
+				printf("Inavlid choice");
+		}
+	}
+}
+
